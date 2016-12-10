@@ -8,21 +8,23 @@ import 'rxjs/add/operator/toPromise';
     <p>Login sad Page</p>
     <loginWebview *ngIf="showWebview" (onResult)="onWebviewResult($event)"></loginWebview>
     <p *ngIf="showLoader">Login.....</p>
+    <p *ngIf="result">Result:: {{result}}</p>
     `
 })
 export class LoginPageComponent implements OnInit {
-    
+
     showWebview = true;
     showLoader = false;
-    
-    constructor(private http:Http) { }
+    result: string;
+
+    constructor(private http: Http) { }
 
     ngOnInit() {
-        
-     }
-    
-    onWebviewResult(result){
-        if(result.type == "code"){
+
+    }
+
+    onWebviewResult(result) {
+        if (result.type == "code") {
             //succeffuly got the user code.
             let code = result.data;
             this.showWebview = false;
@@ -30,14 +32,22 @@ export class LoginPageComponent implements OnInit {
         }
     }
 
-    login(code){
+    login(code) {
         this.showLoader = true;
         console.log('getting code now...');
-        this.http.post("http://localhost:3000/authorize",{code:code})
-            .map( response => response.json())
+        this.http.post("http://localhost:3000/authorize", { code: code })
+            .map(response => response.json())
             .toPromise()
-            .then(console.log.bind(console))
-            .catch(console.error.bind(console))
-        
+            .then(response => {
+                console.log(response);
+                this.result = "Login Success";
+                this.showLoader = false;
+            })
+            .catch(error => {
+                console.error(error);
+                this.result = "Login Failed";
+                this.showLoader = false;
+            })
+
     }
 }

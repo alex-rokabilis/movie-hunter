@@ -12,12 +12,12 @@ export class LoginWebviewComponent implements OnInit {
 
     @ViewChild('loginFrame') loginFrame;
     loginURL = "https://trakt.tv/oauth/authorize?client_id=3b1a622b6f17a0f2d99618629a3e1c072fce2ae803203af643a1f882b12c15c4&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2F&response_type=code"
-    @Output() onResult: EventEmitter<{type:string,data:string}> = new EventEmitter<{}>();
+    @Output() onResult: EventEmitter<{ type: string, data: string }> = new EventEmitter<{}>();
 
     constructor() { }
 
     ngOnInit() {
-        
+
         var webview = this.loginFrame.nativeElement;
 
         //set random partition id so every new webview has a fresh memory storage
@@ -26,28 +26,28 @@ export class LoginWebviewComponent implements OnInit {
 
 
         webview.onloadstart = (ev) => {
-            console.log(ev.url)
-            if (ev.url.indexOf("localhost:4200/?error=") > 0) {
 
-                var error = ev.url.match(/\?error=(.*)&/)[1];
+            let target_url = new URL(ev.url);
+
+            if (target_url.host != "localhost:4200") return;
+
+            if (target_url['searchParams'].has("error")) {
                 this.onResult.emit({
                     type: 'error',
-                    data: error
+                    data: target_url['searchParams'].get("error")
                 })
                 webview.src = this.loginURL;
-
             }
 
-            if (ev.url.indexOf("localhost:4200/?code=") > 0) {
-                console.log(ev.url)
-                //webview.terminate();
-                var code = ev.url.match(/\?code=(.*)/)[1];
-                console.log("code::",code)
+            if (target_url['searchParams'].has("code")) {
                 this.onResult.emit({
                     type: 'code',
-                    data: code
+                    data: target_url['searchParams'].get("code")
                 })
+                webview.src = this.loginURL;
             }
+
+
         }
     }
 }
