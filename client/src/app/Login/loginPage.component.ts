@@ -1,4 +1,7 @@
+import { Http } from '@angular/http';
 import { Component, OnInit } from '@angular/core';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
 
 @Component({
     template: `
@@ -12,9 +15,11 @@ export class LoginPageComponent implements OnInit {
     showWebview = true;
     showLoader = false;
     
-    constructor() { }
+    constructor(private http:Http) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+        
+     }
     
     onWebviewResult(result){
         if(result.type == "code"){
@@ -27,6 +32,12 @@ export class LoginPageComponent implements OnInit {
 
     login(code){
         this.showLoader = true;
-        console.log('getting code now...')
+        console.log('getting code now...');
+        this.http.post("http://localhost:3000/authorize",{code:code})
+            .map( response => response.json())
+            .toPromise()
+            .then(console.log.bind(console))
+            .catch(console.error.bind(console))
+        
     }
 }

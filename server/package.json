@@ -4,7 +4,9 @@
   "description": "The server is planned to be developed with [Express.js](http://expressjs.com/) and [MongoDB](https://www.mongodb.com/).",
   "main": "main.js",
   "dependencies": {
-    "express": "^4.14.0"
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "request": "^2.79.0"
   },
   "devDependencies": {},
   "scripts": {
