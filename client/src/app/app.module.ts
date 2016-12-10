@@ -1,6 +1,9 @@
+import { NavbarComponent } from './Navbar/navbar.component';
+import { UserService } from './User/user.service';
 import { HomePageComponent } from './Home/homePage.component';
 import { LoginWebviewComponent } from './Login/loginWebview.component';
 import { LoginPageComponent } from './Login/loginPage.component';
+import { CanActivateLogin } from './Login/loginCanActivate.service';
 import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
@@ -11,7 +14,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 
 const routes: Routes = [
-  { path: 'login', component: LoginPageComponent },
+  { path: 'login', component: LoginPageComponent , canActivate: [CanActivateLogin] },
   { path: 'home', component: HomePageComponent },
   { path: '**', redirectTo: "/login" },
 ];
@@ -25,7 +28,8 @@ const routes: Routes = [
     AppComponent,
     LoginPageComponent,
     LoginWebviewComponent,
-    HomePageComponent
+    HomePageComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +37,7 @@ const routes: Routes = [
     HttpModule,
     RouterModule.forRoot(routes,{ useHash: true })
   ],
-  providers: [],
+  providers: [UserService,CanActivateLogin],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

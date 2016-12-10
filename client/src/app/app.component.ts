@@ -4,9 +4,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    <h2>{{title}}</h2>
-    <a [routerLink]="['/login']">Login</a>
-    <a [routerLink]="['/home']">Home</a>
+    <navbar></navbar>
     <router-outlet></router-outlet>
 
   `

@@ -1,4 +1,8 @@
 {
     "name": "hello world",
-    "main" : "index.html"
+    "main" : "index.html",
+    "window":{
+        "width": 720,
+        "height": 740
+    }
 }
