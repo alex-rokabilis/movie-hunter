@@ -9,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
             <p>Hello Guest</p>
         </div>
         <div *ngIf="user.username">
-            <p>Hello {{user.username}}</p>
+            <p>Hello {{user.username}} -- {{router.url}}</p> 
             <button (click)='user.logout();router.navigate(["/login"]);'>Logout</button>
         </div>
     ` 
@@ -19,7 +19,7 @@ export class NavbarComponent implements OnInit {
     constructor(private router:Router,private user:UserService) { }
 
     ngOnInit() { 
-
+        
     }
 
 }

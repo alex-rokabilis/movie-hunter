@@ -1,3 +1,4 @@
+import { MovieListPageComponent } from './movieListPage.component';
 import { HttpModule } from '@angular/http';
 import { UserService } from './../User/user.service';
 import { MovieResolver } from './movie.resolver';
@@ -11,38 +12,50 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
     {
         path: 'movie',
-        children: [{
-            path: '', redirectTo: 'popular'
-        }, {
-            path: 'popular',
-            component: MovieListComponent,
-            resolve: {
-                movies: MovieResolver
-            }
-        }, {
-            path: 'trending', 
-            component: MovieListComponent,
-            resolve: {
-                movies: MovieResolver
-            }
-        }, {
-            path: ':id', 
-            component: MovieDetailsComponent,
-            resolve: {
-                movie: MovieResolver
-            }
-        }]
+        children: [
+            {
+                path: '',
+                component: MovieListPageComponent,
+                children: [
+                    {
+                        path: 'popular',
+                        component: MovieListComponent,
+                        resolve: {
+                            movies: MovieResolver
+                        }
+                    },
+                    {
+                        path: 'trending',
+                        component: MovieListComponent,
+                        resolve: {
+                            movies: MovieResolver
+                        }
+                    },
+                    {
+                        path: '',
+                        redirectTo:'popular'
+                    }
+                ]
+
+            },
+            {
+                path: ':id',
+                component: MovieDetailsComponent,
+                resolve: {
+                    movie: MovieResolver
+                }
+            }]
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes),HttpModule],
+    imports: [RouterModule.forChild(routes), HttpModule],
     exports: [RouterModule],
     providers: [MovieService, MovieResolver, UserService]
 })
 export class MovieRoutingModule { }
 
-const MovieRoutingComponents = [MovieListComponent, MovieDetailsComponent];
+const MovieRoutingComponents = [MovieListComponent, MovieListPageComponent,MovieDetailsComponent];
 
 export const MovieModule = {
     routing: MovieRoutingModule,

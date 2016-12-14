@@ -3,10 +3,14 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
+  styles : [
+        'a.active {color:red}',
+    ], 
   template: `
     <navbar></navbar>
-    <a [routerLink]="['movie/popular']">Popular Movies</a>
-    <a [routerLink]="['movie/trending']">Trending Movies</a>
+    <a routerLinkActive="active" routerLink="/movie">Movies</a>
+    <a routerLinkActive="active" routerLink="/login">Login</a>
+    <a routerLinkActive="active" routerLink="/home">Home</a>
     <router-outlet></router-outlet>
 
   `

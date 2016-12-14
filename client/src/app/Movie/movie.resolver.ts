@@ -14,16 +14,15 @@ export class MovieResolver implements Resolve<any> {
 
         const path = route.routeConfig.path;
 
-
         if (path == "popular")
-            return this.movieService.getPopular()
+            return this.movieService.getPopular(route.params['page'])
                 .catch(err => {
                     console.error("err happend", err)
                     if (err.status == 403) this.router.navigate(['/login']);
                     return err;
                 })
         if (path == "trending")
-            return this.movieService.getTrending()
+            return this.movieService.getTrending(route.params['page'])
                 .catch(err => {
                     console.error("err happend", err)
                     if (err.status == 403) this.router.navigate(['/login']);

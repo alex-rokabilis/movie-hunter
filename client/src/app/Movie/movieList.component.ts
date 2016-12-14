@@ -5,13 +5,12 @@ import { Component, OnInit } from '@angular/core';
 import 'rxjs/add/operator/pluck';
 
 @Component({
-    template: `Movie List
+    selector:'movie-list',
+    styles: [':host { width:100%; }'],
+    template: `
 
         <div>
-            <div>
-                Sidebar
-            </div>
-        
+                    
             <div style="margin-left: 2%;margin-right: 2%;margin-top: 10px;">
                 <div class="container" *ngFor="let movie of movies">
                     
