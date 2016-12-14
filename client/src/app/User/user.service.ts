@@ -13,6 +13,8 @@ export class UserService {
     username: string;
     avatar: string;
 
+    trakt_http_headers:Headers;
+
     constructor(private http: Http) { }
 
     get access_token(): string {
@@ -42,13 +44,14 @@ export class UserService {
         if(!this.access_token) return Observable.throw("access token is missing");
         const TRAKT_PROFILE_URL = "https://api.trakt.tv/users/me?extended=full";
         let headers = new Headers({
-            'Content-Type': 'application/json',
+            //'Content-Type': 'application/json',
             'trakt-api-version': '2',
             'Authorization': `Bearer ${this.access_token}`,
             'trakt-api-key': '3b1a622b6f17a0f2d99618629a3e1c072fce2ae803203af643a1f882b12c15c4'
         });
 
         let options = new RequestOptions({ headers: headers });
+        this.trakt_http_headers = headers;
 
         return this.http.get(TRAKT_PROFILE_URL, options).do(response => this.init(response.json()))
 

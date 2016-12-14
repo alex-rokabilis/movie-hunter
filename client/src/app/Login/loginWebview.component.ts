@@ -13,7 +13,7 @@ export class LoginWebviewComponent implements OnInit {
 
     @ViewChild('loginFrame') loginFrame;
     loginURL = "https://trakt.tv/oauth/authorize?client_id=3b1a622b6f17a0f2d99618629a3e1c072fce2ae803203af643a1f882b12c15c4&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2F&response_type=code"
-    @Output() onResult: EventEmitter<{ type: string, data: string }> = new EventEmitter<{}>();
+    @Output() onResult: EventEmitter<{ type: string, data: string }> = new EventEmitter<{ type: string, data: string }>();
 
     constructor() { }
 
@@ -21,7 +21,7 @@ export class LoginWebviewComponent implements OnInit {
 
         var webview = this.loginFrame.nativeElement;
 
-        //set random partition id so every new webview has a fresh memory storage
+        //set random partition id soo every new webview has a fresh memory storage
         webview.partition = Math.random();
         webview.src = this.loginURL;
 

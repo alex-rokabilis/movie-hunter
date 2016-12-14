@@ -7,19 +7,21 @@ import 'rxjs/add/operator/toPromise';
 
 @Component({
     template: `
-    <p>Login sad Page</p>
+    <p>Login Page</p>
     <loginWebview style="height: 610px;display: block;" *ngIf="showWebview" (onResult)="onWebviewResult($event)"></loginWebview>
     <p *ngIf="showLoader">Login.....</p>
-    <p *ngIf="result">Result:: {{result}}</p>
+    <div *ngIf="loginFailed"> 
+        <p>Login Failed please <a href="#" (click)="tryAgain()">try again</a></p>
+    </div>
     `
 })
 export class LoginPageComponent implements OnInit {
 
     showWebview = true;
     showLoader = false;
-    result: string;
+    loginFailed = false;
 
-    constructor(private user: UserService,private router: Router) { }
+    constructor(private user: UserService, private router: Router) { }
 
     ngOnInit() {
         console.log(this.user)
@@ -34,12 +36,23 @@ export class LoginPageComponent implements OnInit {
         }
     }
 
+    tryAgain() {
+        this.showWebview = true;
+        this.showLoader = false;
+        this.loginFailed = false;
+
+    }
+
     login(code) {
         this.showLoader = true;
         console.log('getting code now...');
         this.user.login(code)
-            .then(()=> this.router.navigate(['/home']))
-            .catch( (err) => console.error(err))
+            .then(() => this.router.navigate(['/home']))
+            .catch((err) => {
+                console.error(err)
+                this.loginFailed = true;
+                this.showLoader = false;
+            })
 
     }
 }

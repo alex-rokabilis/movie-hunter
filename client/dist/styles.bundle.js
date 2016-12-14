@@ -1,15 +1,15 @@
 webpackJsonp([1,3],{
 
-/***/ 372:
+/***/ 373:
 /***/ function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(636);
+var content = __webpack_require__(641);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(662)(content, {});
+var update = __webpack_require__(671)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -27,22 +27,22 @@ if(false) {
 
 /***/ },
 
-/***/ 636:
+/***/ 641:
 /***/ function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(637)();
+exports = module.exports = __webpack_require__(642)();
 // imports
 
 
 // module
-exports.push([module.i, "/* You can add global styles to this file, and also import other style files */\n", ""]);
+exports.push([module.i, " /*You can add global styles to this file, and also import other style files \napp-root * {\n    animation-duration: 1s;\n    opacity: 0;\n    animation-name: fadeIn;\n    animation-fill-mode: forwards;\n}\n\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n\n  to {\n    opacity: 1;\n  }\n}*/", ""]);
 
 // exports
 
 
 /***/ },
 
-/***/ 637:
+/***/ 642:
 /***/ function(module, exports) {
 
 /*
@@ -99,7 +99,7 @@ module.exports = function() {
 
 /***/ },
 
-/***/ 662:
+/***/ 671:
 /***/ function(module, exports) {
 
 /*
@@ -352,13 +352,13 @@ function updateLink(linkElement, obj) {
 
 /***/ },
 
-/***/ 665:
+/***/ 674:
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(372);
+module.exports = __webpack_require__(373);
 
 
 /***/ }
 
-},[665]);
+},[674]);
 //# sourceMappingURL=styles.bundle.map

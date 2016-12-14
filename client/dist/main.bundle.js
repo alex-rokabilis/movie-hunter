@@ -1,10 +1,140 @@
 webpackJsonp([0,3],{
 
-/***/ 318:
+/***/ 319:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(675);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__ = __webpack_require__(648);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__ = __webpack_require__(650);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieService; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
+
+let MovieService = class MovieService {
+    constructor(http, user, config) {
+        this.http = http;
+        this.user = user;
+        this.config = config;
+        console.log(this.config);
+    }
+    getMovieImages(movieID) {
+        console.log('searching images for::', movieID);
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestMethod */].Get,
+            url: this.config.tmdbApiEndpoint + "/movie/" + movieID,
+            search: "api_key=d26a0629dcc3f037723d6a91f4f46fc9"
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .map(data => ({
+            backdrop_path: data.backdrop_path ? this.config.tmdbApiBackdropEndpoint + data.backdrop_path : undefined,
+            poster_path: data.poster_path ? this.config.tmdbApiPosterEndpoint + data.poster_path : undefined
+        }))
+            .catch(err => {
+            console.error(err);
+            return __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].of({
+                backdrop_path: undefined,
+                poster_path: undefined
+            });
+        })
+            .toPromise();
+    }
+    getPopular(page, limit) {
+        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* URLSearchParams */]();
+        requestSearchParams.append('page', page || '1');
+        requestSearchParams.append('limit', limit || '25');
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/popular",
+            search: requestSearchParams,
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .do(console.log.bind(console))
+            .map(response => response.json())
+            .toPromise()
+            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
+            .then(movies => Promise.all(movies))
+            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
+        //.then(console.log.bind(console))
+    }
+    getTrending(page, limit) {
+        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* URLSearchParams */]();
+        requestSearchParams.append('page', page || '1');
+        requestSearchParams.append('limit', limit || '25');
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/trending",
+            search: requestSearchParams,
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .map(response => response.map(({ movie, watchers }) => {
+            movie.watchers = watchers;
+            return movie;
+        }))
+            .toPromise()
+            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
+            .then(movies => Promise.all(movies))
+            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
+        //.then(console.log.bind(console))
+    }
+    getMovie(id) {
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/" + id,
+            search: "extended=full",
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .do(console.log.bind(console))
+            .toPromise()
+            .then(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)]))
+            .then(([movieData, movieImages]) => Object.assign(movieData, movieImages));
+        //.then(console.log.bind(console))
+    }
+};
+MovieService = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["b" /* Injectable */])(),
+    __param(2, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["y" /* Inject */])(__WEBPACK_IMPORTED_MODULE_0__app_config__["a" /* APP_CONFIG */])), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"]) === 'function' && _c) || Object])
+], MovieService);
+var _a, _b, _c;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movie.service.js.map
+
+/***/ },
+
+/***/ 320:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return AppComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -47,6 +177,8 @@ AppComponent = __decorate([
         selector: 'app-root',
         template: `
     <navbar></navbar>
+    <a [routerLink]="['movie/popular']">Popular Movies</a>
+    <a [routerLink]="['movie/trending']">Trending Movies</a>
     <router-outlet></router-outlet>
 
   `
@@ -58,7 +190,7 @@ var _a, _b;
 
 /***/ },
 
-/***/ 370:
+/***/ 371:
 /***/ function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -67,21 +199,21 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 370;
+webpackEmptyContext.id = 371;
 
 
 /***/ },
 
-/***/ 371:
+/***/ 372:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(485);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(490);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__polyfills_ts__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(451);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(452);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(484);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app___ = __webpack_require__(483);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(489);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app___ = __webpack_require__(488);
 
 
 
@@ -95,11 +227,11 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dyna
 
 /***/ },
 
-/***/ 477:
+/***/ 478:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return HomePageComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -122,7 +254,7 @@ let HomePageComponent = class HomePageComponent {
 HomePageComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
         template: `
-        <h3>Home Page</h3>
+       <h3>Home Page</h3>
     `
     }), 
     __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__User_user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__User_user_service__["a" /* UserService */]) === 'function' && _a) || Object])
@@ -132,13 +264,13 @@ var _a;
 
 /***/ },
 
-/***/ 478:
+/***/ 479:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(40);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return CanActivateLogin; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -175,16 +307,16 @@ var _a, _b;
 
 /***/ },
 
-/***/ 479:
+/***/ 480:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(91);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(645);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(652);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__ = __webpack_require__(646);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__ = __webpack_require__(654);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return LoginPageComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -207,6 +339,7 @@ let LoginPageComponent = class LoginPageComponent {
         this.router = router;
         this.showWebview = true;
         this.showLoader = false;
+        this.loginFailed = false;
     }
     ngOnInit() {
         console.log(this.user);
@@ -219,21 +352,32 @@ let LoginPageComponent = class LoginPageComponent {
             this.login(code);
         }
     }
+    tryAgain() {
+        this.showWebview = true;
+        this.showLoader = false;
+        this.loginFailed = false;
+    }
     login(code) {
         this.showLoader = true;
         console.log('getting code now...');
         this.user.login(code)
             .then(() => this.router.navigate(['/home']))
-            .catch((err) => console.error(err));
+            .catch((err) => {
+            console.error(err);
+            this.loginFailed = true;
+            this.showLoader = false;
+        });
     }
 };
 LoginPageComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__angular_core__["G" /* Component */])({
         template: `
-    <p>Login sad Page</p>
+    <p>Login Page</p>
     <loginWebview style="height: 610px;display: block;" *ngIf="showWebview" (onResult)="onWebviewResult($event)"></loginWebview>
     <p *ngIf="showLoader">Login.....</p>
-    <p *ngIf="result">Result:: {{result}}</p>
+    <div *ngIf="loginFailed"> 
+        <p>Login Failed please <a href="#" (click)="tryAgain()">try again</a></p>
+    </div>
     `
     }), 
     __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["a" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["a" /* Router */]) === 'function' && _b) || Object])
@@ -243,7 +387,7 @@ var _a, _b;
 
 /***/ },
 
-/***/ 480:
+/***/ 481:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -266,7 +410,7 @@ let LoginWebviewComponent = class LoginWebviewComponent {
     }
     ngOnInit() {
         var webview = this.loginFrame.nativeElement;
-        //set random partition id so every new webview has a fresh memory storage
+        //set random partition id soo every new webview has a fresh memory storage
         webview.partition = Math.random();
         webview.src = this.loginURL;
         webview.addEventListener('loadcommit', (ev) => {
@@ -318,12 +462,271 @@ var _a;
 
 /***/ },
 
-/***/ 481:
+/***/ 482:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__movie_resolver__ = __webpack_require__(483);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__movieDetails_component__ = __webpack_require__(484);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__movie_service__ = __webpack_require__(319);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__movieList_component__ = __webpack_require__(485);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__angular_router__ = __webpack_require__(40);
+/* unused harmony export MovieRoutingModule */
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+
+const routes = [
+    {
+        path: 'movie',
+        children: [{
+                path: '', redirectTo: 'popular'
+            }, {
+                path: 'popular',
+                component: __WEBPACK_IMPORTED_MODULE_3__movieList_component__["a" /* MovieListComponent */],
+                resolve: {
+                    movies: __WEBPACK_IMPORTED_MODULE_0__movie_resolver__["a" /* MovieResolver */]
+                }
+            }, {
+                path: 'trending',
+                component: __WEBPACK_IMPORTED_MODULE_3__movieList_component__["a" /* MovieListComponent */],
+                resolve: {
+                    movies: __WEBPACK_IMPORTED_MODULE_0__movie_resolver__["a" /* MovieResolver */]
+                }
+            }, {
+                path: ':id',
+                component: __WEBPACK_IMPORTED_MODULE_1__movieDetails_component__["a" /* MovieDetailsComponent */],
+                resolve: {
+                    movie: __WEBPACK_IMPORTED_MODULE_0__movie_resolver__["a" /* MovieResolver */]
+                }
+            }]
+    },
+];
+let MovieRoutingModule = class MovieRoutingModule {
+};
+MovieRoutingModule = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__angular_core__["I" /* NgModule */])({
+        imports: [__WEBPACK_IMPORTED_MODULE_5__angular_router__["c" /* RouterModule */].forChild(routes)],
+        exports: [__WEBPACK_IMPORTED_MODULE_5__angular_router__["c" /* RouterModule */]],
+        providers: [__WEBPACK_IMPORTED_MODULE_2__movie_service__["a" /* MovieService */], __WEBPACK_IMPORTED_MODULE_0__movie_resolver__["a" /* MovieResolver */]]
+    }), 
+    __metadata('design:paramtypes', [])
+], MovieRoutingModule);
+const MovieRoutingComponents = [__WEBPACK_IMPORTED_MODULE_3__movieList_component__["a" /* MovieListComponent */], __WEBPACK_IMPORTED_MODULE_1__movieDetails_component__["a" /* MovieDetailsComponent */]];
+const MovieModule = {
+    routing: MovieRoutingModule,
+    components: MovieRoutingComponents
+};
+/* harmony export (immutable) */ exports["a"] = MovieModule;
+
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movie.module.js.map
+
+/***/ },
+
+/***/ 483:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__movie_service__ = __webpack_require__(319);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(40);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieResolver; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+let MovieResolver = class MovieResolver {
+    constructor(movieService, router) {
+        this.movieService = movieService;
+        this.router = router;
+    }
+    resolve(route) {
+        const path = route.routeConfig.path;
+        if (path == "popular")
+            return this.movieService.getPopular()
+                .catch(err => {
+                console.error("err happend", err);
+                if (err.status == 403)
+                    this.router.navigate(['/login']);
+                return err;
+            });
+        if (path == "trending")
+            return this.movieService.getTrending()
+                .catch(err => {
+                console.error("err happend", err);
+                if (err.status == 403)
+                    this.router.navigate(['/login']);
+                return err;
+            });
+        if (path == ":id")
+            return this.movieService.getMovie(route.params['id'])
+                .catch(err => {
+                console.error("err happend", err);
+                if (err.status == 403)
+                    this.router.navigate(['/login']);
+                return err;
+            });
+    }
+};
+MovieResolver = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["b" /* Injectable */])(), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__movie_service__["a" /* MovieService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__movie_service__["a" /* MovieService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["a" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["a" /* Router */]) === 'function' && _b) || Object])
+], MovieResolver);
+var _a, _b;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movie.resolver.js.map
+
+/***/ },
+
+/***/ 484:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieDetailsComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+let MovieDetailsComponent = class MovieDetailsComponent {
+    constructor(route) {
+        this.route = route;
+    }
+    ngOnInit() {
+        this.route.data
+            .pluck('movie')
+            .subscribe((m) => this.movie = m);
+    }
+};
+MovieDetailsComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        selector: 'selector',
+        template: `
+        <h3>{{movie.title}}</h3>
+        <div>
+            <img src="{{movie.poster_path}}">
+        </div>
+        <pre>{{ movie | json}}</pre>
+    `
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["b" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["b" /* ActivatedRoute */]) === 'function' && _a) || Object])
+], MovieDetailsComponent);
+var _a;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movieDetails.component.js.map
+
+/***/ },
+
+/***/ 485:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__ = __webpack_require__(653);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieListComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+let MovieListComponent = class MovieListComponent {
+    constructor(route) {
+        this.route = route;
+    }
+    ngOnInit() {
+        console.log(this.route);
+        this.route.data.pluck('movies').subscribe(m => this.movies = m);
+        //this.movieService.getTrending().then( m => this.movies = m)
+    }
+};
+MovieListComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        template: `Movie List
+
+        <div>
+            <div>
+                Sidebar
+            </div>
+        
+            <div style="margin-left: 2%;margin-right: 2%;margin-top: 10px;">
+                <div class="container" *ngFor="let movie of movies">
+                    
+                    <a [routerLink]='["/movie/" + movie.ids.slug]'>
+                        <div style="background-color: #1d1d1d;position: relative;overflow: hidden;">
+                            
+                            <img style="min-height: 100%;position: relative; top: 0; left: 0;display: block;    width: 100%;vertical-align: middle;" 
+                                src={{movie.backdrop_path}}>
+                        
+                        </div>
+                        
+                        <p>{{movie.title}}</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .container{
+                width: 23%;
+                display: inline-table;
+                margin-right: 2%;
+                text-align: center;
+            }
+            .container:nth-child(4n+4) {  
+                margin-right: 0;
+            }
+        
+        </style>
+    `
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["b" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["b" /* ActivatedRoute */]) === 'function' && _a) || Object])
+], MovieListComponent);
+var _a;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movieList.component.js.map
+
+/***/ },
+
+/***/ 486:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User_user_service__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return NavbarComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -366,22 +769,24 @@ var _a, _b;
 
 /***/ },
 
-/***/ 482:
+/***/ 487:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Navbar_navbar_component__ = __webpack_require__(481);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Home_homePage_component__ = __webpack_require__(477);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Login_loginWebview_component__ = __webpack_require__(480);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Login_loginPage_component__ = __webpack_require__(479);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Login_loginCanActivate_service__ = __webpack_require__(478);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__app_component__ = __webpack_require__(318);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__angular_platform_browser__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_forms__ = __webpack_require__(444);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_http__ = __webpack_require__(295);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__angular_router__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(675);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Movie_movie_module__ = __webpack_require__(482);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Navbar_navbar_component__ = __webpack_require__(486);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__User_user_service__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Home_homePage_component__ = __webpack_require__(478);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Login_loginWebview_component__ = __webpack_require__(481);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Login_loginPage_component__ = __webpack_require__(480);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Login_loginCanActivate_service__ = __webpack_require__(479);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__app_component__ = __webpack_require__(320);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_platform_browser__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__angular_forms__ = __webpack_require__(445);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__angular_http__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__angular_router__ = __webpack_require__(40);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -404,31 +809,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
 const routes = [
-    { path: 'login', component: __WEBPACK_IMPORTED_MODULE_4__Login_loginPage_component__["a" /* LoginPageComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_5__Login_loginCanActivate_service__["a" /* CanActivateLogin */]] },
-    { path: 'home', component: __WEBPACK_IMPORTED_MODULE_2__Home_homePage_component__["a" /* HomePageComponent */] },
+    { path: 'login', component: __WEBPACK_IMPORTED_MODULE_6__Login_loginPage_component__["a" /* LoginPageComponent */], canActivate: [__WEBPACK_IMPORTED_MODULE_7__Login_loginCanActivate_service__["a" /* CanActivateLogin */]] },
+    { path: 'home', component: __WEBPACK_IMPORTED_MODULE_4__Home_homePage_component__["a" /* HomePageComponent */] },
     { path: '**', redirectTo: "/login" },
 ];
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__angular_core__["I" /* NgModule */])({
-        schemas: [__WEBPACK_IMPORTED_MODULE_8__angular_core__["Y" /* NO_ERRORS_SCHEMA */]],
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10__angular_core__["I" /* NgModule */])({
+        schemas: [__WEBPACK_IMPORTED_MODULE_10__angular_core__["Y" /* NO_ERRORS_SCHEMA */]],
         declarations: [
-            __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */],
-            __WEBPACK_IMPORTED_MODULE_4__Login_loginPage_component__["a" /* LoginPageComponent */],
-            __WEBPACK_IMPORTED_MODULE_3__Login_loginWebview_component__["a" /* LoginWebviewComponent */],
-            __WEBPACK_IMPORTED_MODULE_2__Home_homePage_component__["a" /* HomePageComponent */],
-            __WEBPACK_IMPORTED_MODULE_0__Navbar_navbar_component__["a" /* NavbarComponent */]
+            __WEBPACK_IMPORTED_MODULE_8__app_component__["a" /* AppComponent */],
+            __WEBPACK_IMPORTED_MODULE_6__Login_loginPage_component__["a" /* LoginPageComponent */],
+            __WEBPACK_IMPORTED_MODULE_5__Login_loginWebview_component__["a" /* LoginWebviewComponent */],
+            __WEBPACK_IMPORTED_MODULE_4__Home_homePage_component__["a" /* HomePageComponent */],
+            __WEBPACK_IMPORTED_MODULE_2__Navbar_navbar_component__["a" /* NavbarComponent */],
+            ...__WEBPACK_IMPORTED_MODULE_1__Movie_movie_module__["a" /* MovieModule */].components
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_7__angular_platform_browser__["b" /* BrowserModule */],
-            __WEBPACK_IMPORTED_MODULE_9__angular_forms__["a" /* FormsModule */],
-            __WEBPACK_IMPORTED_MODULE_10__angular_http__["d" /* HttpModule */],
-            __WEBPACK_IMPORTED_MODULE_11__angular_router__["c" /* RouterModule */].forRoot(routes, { useHash: true })
+            __WEBPACK_IMPORTED_MODULE_9__angular_platform_browser__["b" /* BrowserModule */],
+            __WEBPACK_IMPORTED_MODULE_11__angular_forms__["a" /* FormsModule */],
+            __WEBPACK_IMPORTED_MODULE_12__angular_http__["g" /* HttpModule */],
+            __WEBPACK_IMPORTED_MODULE_13__angular_router__["c" /* RouterModule */].forRoot(routes, { useHash: true }),
+            __WEBPACK_IMPORTED_MODULE_1__Movie_movie_module__["a" /* MovieModule */].routing
         ],
-        providers: [__WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */], __WEBPACK_IMPORTED_MODULE_5__Login_loginCanActivate_service__["a" /* CanActivateLogin */]],
-        bootstrap: [__WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]]
+        providers: [__WEBPACK_IMPORTED_MODULE_3__User_user_service__["a" /* UserService */], __WEBPACK_IMPORTED_MODULE_7__Login_loginCanActivate_service__["a" /* CanActivateLogin */], { provide: __WEBPACK_IMPORTED_MODULE_0__app_config__["a" /* APP_CONFIG */], useValue: __WEBPACK_IMPORTED_MODULE_0__app_config__["c" /* config */] }],
+        bootstrap: [__WEBPACK_IMPORTED_MODULE_8__app_component__["a" /* AppComponent */]]
     }), 
     __metadata('design:paramtypes', [])
 ], AppModule);
@@ -436,12 +845,12 @@ AppModule = __decorate([
 
 /***/ },
 
-/***/ 483:
+/***/ 488:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_component__ = __webpack_require__(318);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(482);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_component__ = __webpack_require__(320);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(487);
 /* unused harmony namespace reexport */
 /* harmony namespace reexport (by used) */ __webpack_require__.d(exports, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__app_module__["a"]; });
 
@@ -450,7 +859,7 @@ AppModule = __decorate([
 
 /***/ },
 
-/***/ 484:
+/***/ 489:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -467,41 +876,41 @@ const environment = {
 
 /***/ },
 
-/***/ 485:
+/***/ 490:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(499);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(504);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(492);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(497);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(488);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(493);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(494);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(499);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(493);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(498);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(491);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(496);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(490);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(495);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(498);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(503);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(487);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(492);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(486);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(491);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(496);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(501);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(489);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(494);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(497);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(502);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(495);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(500);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(500);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(505);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(663);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(672);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__);
 
 
@@ -523,25 +932,46 @@ const environment = {
 
 /***/ },
 
-/***/ 664:
+/***/ 673:
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(371);
+module.exports = __webpack_require__(372);
 
 
 /***/ },
 
-/***/ 94:
+/***/ 675:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_http__ = __webpack_require__(295);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return APP_CONFIG; });
+
+const config = {
+    traktApiEndpoint: 'https://api.trakt.tv',
+    tmdbApiEndpoint: 'https://api.themoviedb.org/3',
+    tmdbApiBackdropEndpoint: 'http://image.tmdb.org/t/p/w780',
+    tmdbApiPosterEndpoint: 'http://image.tmdb.org/t/p/w500',
+    title: 'Movie Hunter'
+};
+/* harmony export (immutable) */ exports["c"] = config;
+
+let APP_CONFIG = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* OpaqueToken */]('app.config');
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/app-config.js.map
+
+/***/ },
+
+/***/ 74:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_http__ = __webpack_require__(191);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__ = __webpack_require__(644);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__ = __webpack_require__(651);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__ = __webpack_require__(643);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__ = __webpack_require__(649);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return UserService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -589,12 +1019,13 @@ let UserService = class UserService {
             return __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].throw("access token is missing");
         const TRAKT_PROFILE_URL = "https://api.trakt.tv/users/me?extended=full";
         let headers = new __WEBPACK_IMPORTED_MODULE_0__angular_http__["a" /* Headers */]({
-            'Content-Type': 'application/json',
+            //'Content-Type': 'application/json',
             'trakt-api-version': '2',
             'Authorization': `Bearer ${this.access_token}`,
             'trakt-api-key': '3b1a622b6f17a0f2d99618629a3e1c072fce2ae803203af643a1f882b12c15c4'
         });
         let options = new __WEBPACK_IMPORTED_MODULE_0__angular_http__["b" /* RequestOptions */]({ headers: headers });
+        this.trakt_http_headers = headers;
         return this.http.get(TRAKT_PROFILE_URL, options).do(response => this.init(response.json()));
     }
     login(code) {
@@ -622,5 +1053,5 @@ var _a;
 
 /***/ }
 
-},[664]);
+},[673]);
 //# sourceMappingURL=main.bundle.map

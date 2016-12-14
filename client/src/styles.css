@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+ /*You can add global styles to this file, and also import other style files 
+app-root * {
+    animation-duration: 1s;
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}*/

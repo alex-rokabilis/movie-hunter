@@ -5,6 +5,8 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-root',
   template: `
     <navbar></navbar>
+    <a [routerLink]="['movie/popular']">Popular Movies</a>
+    <a [routerLink]="['movie/trending']">Trending Movies</a>
     <router-outlet></router-outlet>
 
   `

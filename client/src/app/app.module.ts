@@ -1,3 +1,5 @@
+import { APP_CONFIG, config  } from './app-config';
+import { MovieModule } from './Movie/movie.module';
 import { NavbarComponent } from './Navbar/navbar.component';
 import { UserService } from './User/user.service';
 import { HomePageComponent } from './Home/homePage.component';
@@ -29,15 +31,18 @@ const routes: Routes = [
     LoginPageComponent,
     LoginWebviewComponent,
     HomePageComponent,
-    NavbarComponent
+    NavbarComponent,
+    ...MovieModule.components
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(routes,{ useHash: true })
+    RouterModule.forRoot(routes,{ useHash: true }),
+    MovieModule.routing
+    
   ],
-  providers: [UserService,CanActivateLogin],
+  providers: [UserService,CanActivateLogin, { provide: APP_CONFIG, useValue: config }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
