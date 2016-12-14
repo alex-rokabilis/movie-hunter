@@ -45,11 +45,11 @@ export class MovieService {
     }
 
 
-    public getPopular(page?: string, limit?: string): any {
+    public getPopular(page: string = '1', limit: string = '25'): any {
 
         let requestSearchParams = new URLSearchParams();
-        requestSearchParams.append('page', page || '1')
-        requestSearchParams.append('limit', limit || '25')
+        requestSearchParams.append('page', page )
+        requestSearchParams.append('limit', limit)
 
         let requestOptions = new Request({
             method: RequestMethod.Get,
@@ -71,7 +71,7 @@ export class MovieService {
         //.then(console.log.bind(console))
     }
 
-    public getTrending(page: string, limit: string): any {
+    public getTrending(page: string = '1', limit: string = '25'): any {
 
         let requestSearchParams = new URLSearchParams();
         requestSearchParams.append('page', page || '1')

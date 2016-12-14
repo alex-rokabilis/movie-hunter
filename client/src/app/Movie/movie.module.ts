@@ -1,3 +1,5 @@
+import { HttpModule } from '@angular/http';
+import { UserService } from './../User/user.service';
 import { MovieResolver } from './movie.resolver';
 import { MovieDetailsComponent } from './movieDetails.component';
 import { MovieService } from './movie.service';
@@ -34,9 +36,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [RouterModule.forChild(routes),HttpModule],
     exports: [RouterModule],
-    providers: [MovieService, MovieResolver]
+    providers: [MovieService, MovieResolver, UserService]
 })
 export class MovieRoutingModule { }
 

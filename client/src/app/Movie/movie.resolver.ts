@@ -1,4 +1,4 @@
-import { MovieService,Movie } from './movie.service';
+import { MovieService } from './movie.service';
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
@@ -10,7 +10,7 @@ export class MovieResolver implements Resolve<any> {
         private router: Router
     ) { }
 
-    resolve(route: ActivatedRouteSnapshot): Promise<Movie> {
+    resolve(route: ActivatedRouteSnapshot): Promise<any> {
 
         const path = route.routeConfig.path;
 
