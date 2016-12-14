@@ -1,3 +1,4 @@
+import { LoaderComponent } from './Loader/loader.component';
 import { APP_CONFIG, config  } from './app-config';
 
 import { LoginModule } from './Login/login.module';
@@ -27,7 +28,7 @@ const routes: Routes = [
     AppComponent,
     HomePageComponent,
     NavbarComponent,
-
+    //LoaderComponent,
     ...LoginModule.components,
     ...MovieModule.components
   ],
