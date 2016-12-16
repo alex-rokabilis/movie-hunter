@@ -10,9 +10,7 @@ import { Component, OnInit, Input } from '@angular/core';
     template: `
             <a [routerLink]='["../", item.ids?.slug]'>
                 
-                <div class="img-container">
-                    <img src={{item.backdrop_path}}>
-                </div>
+                <delayed-image [image_src]="item.backdrop_path"></delayed-image>
                 <p>{{item.title}}</p>
             </a>
 

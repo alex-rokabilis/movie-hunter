@@ -333,9 +333,7 @@ ItemThumbComponent = __decorate([
         template: `
             <a [routerLink]='["../", item.ids?.slug]'>
                 
-                <div class="img-container">
-                    <img src={{item.backdrop_path}}>
-                </div>
+                <delayed-image [image_src]="item.backdrop_path"></delayed-image>
                 <p>{{item.title}}</p>
             </a>
 
@@ -1343,17 +1341,18 @@ var _a, _b;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reusable_itemDetails_component__ = __webpack_require__(321);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Reusable_listPageSidebar_component__ = __webpack_require__(325);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Reusable_itemThumb_component__ = __webpack_require__(324);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__ = __webpack_require__(322);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemListPage_component__ = __webpack_require__(323);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__User_user_service__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__tv_resolver__ = __webpack_require__(497);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__tv_service__ = __webpack_require__(326);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_router__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_http__ = __webpack_require__(73);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reusable_delayedImage_components__ = __webpack_require__(684);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Reusable_itemDetails_component__ = __webpack_require__(321);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Reusable_listPageSidebar_component__ = __webpack_require__(325);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Reusable_itemThumb_component__ = __webpack_require__(324);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemList_component__ = __webpack_require__(322);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Reusable_itemListPage_component__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__User_user_service__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__tv_resolver__ = __webpack_require__(497);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__tv_service__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_router__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__angular_http__ = __webpack_require__(73);
 /* unused harmony export TvRoutingModule */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1375,29 +1374,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 const routes = [
     {
         path: 'tv',
         children: [
             {
                 path: '',
-                component: __WEBPACK_IMPORTED_MODULE_4__Reusable_itemListPage_component__["a" /* ListPageComponent */],
+                component: __WEBPACK_IMPORTED_MODULE_5__Reusable_itemListPage_component__["a" /* ListPageComponent */],
                 data: {
                     title: "Series"
                 },
                 children: [
                     {
                         path: 'popular',
-                        component: __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__["a" /* ItemListComponent */],
+                        component: __WEBPACK_IMPORTED_MODULE_4__Reusable_itemList_component__["a" /* ItemListComponent */],
                         resolve: {
-                            items: __WEBPACK_IMPORTED_MODULE_6__tv_resolver__["a" /* TvResolver */]
+                            items: __WEBPACK_IMPORTED_MODULE_7__tv_resolver__["a" /* TvResolver */]
                         }
                     },
                     {
                         path: 'trending',
-                        component: __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__["a" /* ItemListComponent */],
+                        component: __WEBPACK_IMPORTED_MODULE_4__Reusable_itemList_component__["a" /* ItemListComponent */],
                         resolve: {
-                            items: __WEBPACK_IMPORTED_MODULE_6__tv_resolver__["a" /* TvResolver */]
+                            items: __WEBPACK_IMPORTED_MODULE_7__tv_resolver__["a" /* TvResolver */]
                         }
                     },
                     {
@@ -1408,9 +1408,9 @@ const routes = [
             },
             {
                 path: ':id',
-                component: __WEBPACK_IMPORTED_MODULE_0__Reusable_itemDetails_component__["a" /* ItemDetailsComponent */],
+                component: __WEBPACK_IMPORTED_MODULE_1__Reusable_itemDetails_component__["a" /* ItemDetailsComponent */],
                 resolve: {
-                    item: __WEBPACK_IMPORTED_MODULE_6__tv_resolver__["a" /* TvResolver */]
+                    item: __WEBPACK_IMPORTED_MODULE_7__tv_resolver__["a" /* TvResolver */]
                 }
             }]
     },
@@ -1418,19 +1418,20 @@ const routes = [
 let TvRoutingModule = class TvRoutingModule {
 };
 TvRoutingModule = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__angular_core__["I" /* NgModule */])({
-        imports: [__WEBPACK_IMPORTED_MODULE_9__angular_router__["f" /* RouterModule */].forChild(routes), __WEBPACK_IMPORTED_MODULE_10__angular_http__["d" /* HttpModule */]],
-        exports: [__WEBPACK_IMPORTED_MODULE_9__angular_router__["f" /* RouterModule */]],
-        providers: [__WEBPACK_IMPORTED_MODULE_7__tv_service__["a" /* TvService */], __WEBPACK_IMPORTED_MODULE_6__tv_resolver__["a" /* TvResolver */], __WEBPACK_IMPORTED_MODULE_5__User_user_service__["a" /* UserService */]]
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__angular_core__["I" /* NgModule */])({
+        imports: [__WEBPACK_IMPORTED_MODULE_10__angular_router__["f" /* RouterModule */].forChild(routes), __WEBPACK_IMPORTED_MODULE_11__angular_http__["d" /* HttpModule */]],
+        exports: [__WEBPACK_IMPORTED_MODULE_10__angular_router__["f" /* RouterModule */]],
+        providers: [__WEBPACK_IMPORTED_MODULE_8__tv_service__["a" /* TvService */], __WEBPACK_IMPORTED_MODULE_7__tv_resolver__["a" /* TvResolver */], __WEBPACK_IMPORTED_MODULE_6__User_user_service__["a" /* UserService */]]
     }), 
     __metadata('design:paramtypes', [])
 ], TvRoutingModule);
 const TvRoutingComponents = [
-    __WEBPACK_IMPORTED_MODULE_0__Reusable_itemDetails_component__["a" /* ItemDetailsComponent */],
-    __WEBPACK_IMPORTED_MODULE_4__Reusable_itemListPage_component__["a" /* ListPageComponent */],
-    __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__["a" /* ItemListComponent */],
-    __WEBPACK_IMPORTED_MODULE_2__Reusable_itemThumb_component__["a" /* ItemThumbComponent */],
-    __WEBPACK_IMPORTED_MODULE_1__Reusable_listPageSidebar_component__["a" /* ListPageSidebarComponent */]
+    __WEBPACK_IMPORTED_MODULE_1__Reusable_itemDetails_component__["a" /* ItemDetailsComponent */],
+    __WEBPACK_IMPORTED_MODULE_5__Reusable_itemListPage_component__["a" /* ListPageComponent */],
+    __WEBPACK_IMPORTED_MODULE_4__Reusable_itemList_component__["a" /* ItemListComponent */],
+    __WEBPACK_IMPORTED_MODULE_3__Reusable_itemThumb_component__["a" /* ItemThumbComponent */],
+    __WEBPACK_IMPORTED_MODULE_2__Reusable_listPageSidebar_component__["a" /* ListPageSidebarComponent */],
+    __WEBPACK_IMPORTED_MODULE_0__Reusable_delayedImage_components__["a" /* DelayedImageComponent */]
 ];
 const TvModule = {
     routing: TvRoutingModule,
@@ -1669,6 +1670,90 @@ const environment = {
 
 module.exports = __webpack_require__(381);
 
+
+/***/ },
+
+/***/ 684:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return DelayedImageComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+let DelayedImageComponent = class DelayedImageComponent {
+    constructor() {
+        this.loadCompleted = false;
+    }
+    ngOnInit() {
+        console.log(this.image_src);
+        console.log(this.defaultImage);
+        console.log(this.newImage);
+        this.newImage.nativeElement.src = this.image_src;
+        this.newImage.nativeElement.onerror = (err) => {
+            // console.log('retrying...');
+            // setTimeout( () => this.newImage.nativeElement.src = this.image_src,2000)
+        };
+        this.newImage.nativeElement.onload = () => {
+            console.log('load completed');
+            this.defaultImage.nativeElement.className = "hidden";
+            this.newImage.nativeElement.className = "visible";
+        };
+    }
+};
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Input */])('image_src'), 
+    __metadata('design:type', String)
+], DelayedImageComponent.prototype, "image_src", void 0);
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_26" /* ViewChild */])('defaultImage'), 
+    __metadata('design:type', (typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["g" /* ElementRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["g" /* ElementRef */]) === 'function' && _a) || Object)
+], DelayedImageComponent.prototype, "defaultImage", void 0);
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_26" /* ViewChild */])('newImage'), 
+    __metadata('design:type', (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["g" /* ElementRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["g" /* ElementRef */]) === 'function' && _b) || Object)
+], DelayedImageComponent.prototype, "newImage", void 0);
+DelayedImageComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
+        selector: 'delayed-image',
+        styles: [
+            '.img-container {background-color: #1d1d1d;position: relative;overflow: hidden;}',
+            '.img-container img {min-height: 100%;position: relative; top: 0; left: 0;  width: 100%;vertical-align: middle;}',
+            `.visible
+               {
+                       visibility: visible;
+                       opacity: 1;
+                       transition: opacity .5s ease-out;
+               }
+        `,
+            `.hidden
+               {
+                       visibility: hidden;
+                       opacity: 0;
+                       transition: visibility 0s .5s, opacity .5s ease-out;
+               }
+        `
+        ],
+        template: `
+        <div class="img-container">
+            <img class="visible"  #defaultImage src="https://trakt.tv/assets/placeholders/thumb/fanart-32a7c2081b8e6a119e69c001155908ed.png">        
+            <img class="hidden" style="position:absolute"  #newImage>        
+        </div>
+        
+    `
+    }), 
+    __metadata('design:paramtypes', [])
+], DelayedImageComponent);
+var _a, _b;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/delayedImage.components.js.map
 
 /***/ }
 

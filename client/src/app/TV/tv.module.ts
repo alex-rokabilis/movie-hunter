@@ -1,3 +1,4 @@
+import { DelayedImageComponent } from './../Reusable/delayedImage.components';
 //import reusable components
 import { ItemDetailsComponent } from './../Reusable/itemDetails.component';
 import { ListPageSidebarComponent } from './../Reusable/listPageSidebar.component';
@@ -70,7 +71,8 @@ const TvRoutingComponents = [
     ListPageComponent,
     ItemListComponent,
     ItemThumbComponent,
-    ListPageSidebarComponent
+    ListPageSidebarComponent,
+    DelayedImageComponent
     ];
 
 export const TvModule = {
