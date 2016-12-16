@@ -1,3 +1,5 @@
+import { MovieThumbComponent } from './movieThumb.component';
+import { movieListPageSidebarComponent } from './movieListPageSidebar.component';
 import { MovieListPageComponent } from './movieListPage.component';
 import { HttpModule } from '@angular/http';
 import { UserService } from './../User/user.service';
@@ -55,7 +57,12 @@ const routes: Routes = [
 })
 export class MovieRoutingModule { }
 
-const MovieRoutingComponents = [MovieListComponent, MovieListPageComponent,MovieDetailsComponent];
+const MovieRoutingComponents = [
+    MovieListComponent, 
+    MovieListPageComponent,
+    MovieDetailsComponent,
+    movieListPageSidebarComponent,
+    MovieThumbComponent];
 
 export const MovieModule = {
     routing: MovieRoutingModule,
