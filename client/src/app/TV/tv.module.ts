@@ -7,8 +7,8 @@ import { ListPageComponent } from './../Reusable/itemListPage.component';
 
 //import necessary services
 import { UserService } from './../User/user.service';
-import { MovieResolver } from './movie.resolver';
-import { MovieService } from './movie.service';
+import { TvResolver  } from './tv.resolver';
+import { TvService } from './tv.service';
 
 //import angular modules
 import { NgModule } from '@angular/core';
@@ -18,27 +18,27 @@ import { HttpModule } from '@angular/http';
 
 const routes: Routes = [
     {
-        path: 'movie',
+        path: 'tv',
         children: [
             {
                 path: '',
                 component: ListPageComponent,
                 data:{
-                    title: "Movies"
+                    title: "Series"
                 },
                 children: [
                     {
                         path: 'popular',
                         component: ItemListComponent,
                         resolve: {
-                            items: MovieResolver
+                            items: TvResolver
                         }
                     },
                     {
                         path: 'trending',
                         component: ItemListComponent,
                         resolve: {
-                            items: MovieResolver
+                            items: TvResolver
                         }
                     },
                     {
@@ -52,7 +52,7 @@ const routes: Routes = [
                 path: ':id',
                 component: ItemDetailsComponent,
                 resolve: {
-                    item: MovieResolver
+                    item: TvResolver
                 }
             }]
     },
@@ -61,11 +61,11 @@ const routes: Routes = [
 @NgModule({
     imports: [RouterModule.forChild(routes), HttpModule],
     exports: [RouterModule],
-    providers: [MovieService, MovieResolver, UserService]
+    providers: [TvService, TvResolver, UserService]
 })
-export class MovieRoutingModule { }
+export class TvRoutingModule { }
 
-const MovieRoutingComponents = [ 
+const TvRoutingComponents = [ 
     ItemDetailsComponent,   
     ListPageComponent,
     ItemListComponent,
@@ -73,7 +73,7 @@ const MovieRoutingComponents = [
     ListPageSidebarComponent
     ];
 
-export const MovieModule = {
-    routing: MovieRoutingModule,
-    components: MovieRoutingComponents
+export const TvModule = {
+    routing: TvRoutingModule,
+    components: TvRoutingComponents
 }

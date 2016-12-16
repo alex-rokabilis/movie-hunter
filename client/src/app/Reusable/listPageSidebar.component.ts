@@ -1,5 +1,5 @@
 import { Router, ActivatedRoute } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'list-sidebar',
@@ -15,7 +15,7 @@ import { Component, OnInit } from '@angular/core';
     ],
     template: `
             <div class="sidebar">
-                <h3>Movies Or Series</h3>
+                <h3><u>{{title}}</u></h3>
                 <br>
                 <div class='navigation'>
                     <a href="javascript:void(0)" (click)='previous()'>Previous</a>
@@ -35,6 +35,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListPageSidebarComponent implements OnInit {
 
+    @Input('title') title:string;
     constructor(private router: Router, private route: ActivatedRoute) { }
 
     ngOnInit() {}

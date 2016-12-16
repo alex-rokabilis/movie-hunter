@@ -3,6 +3,8 @@ import { APP_CONFIG, config  } from './app-config';
 
 import { LoginModule } from './Login/login.module';
 import { MovieModule } from './Movie/movie.module';
+import { TvModule } from './TV/tv.module';
+
 import { NavbarComponent } from './Navbar/navbar.component';
 import { HomePageComponent } from './Home/homePage.component';
 import { AppComponent } from './app.component';
@@ -30,14 +32,17 @@ const routes: Routes = [
     NavbarComponent,
     LoaderComponent,
     ...LoginModule.components,
-    ...MovieModule.components
+    ...MovieModule.components,
+    ...TvModule.components
+
   ],
   imports: [
     BrowserModule,
     FormsModule,
     RouterModule.forRoot(routes,{ useHash: true }),
     MovieModule.routing,
-    LoginModule.routing
+    LoginModule.routing,
+    TvModule.routing
     
   ],
   providers: [{ provide: APP_CONFIG, useValue: config }],

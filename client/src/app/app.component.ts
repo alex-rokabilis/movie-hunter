@@ -10,6 +10,7 @@ import { Component, OnInit } from '@angular/core';
     <loader></loader>
     <navbar></navbar>
     <a routerLinkActive="active" routerLink="/movie">Movies</a>
+    <a routerLinkActive="active" routerLink="/tv">TV</a>
     <a routerLinkActive="active" routerLink="/login">Login</a>
     <a routerLinkActive="active" routerLink="/home">Home</a>
     <router-outlet></router-outlet>

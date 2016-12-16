@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
     ],
     template: `
         <div class="container">
-            <list-sidebar></list-sidebar>
+            <list-sidebar [title]="title"></list-sidebar>
             <router-outlet></router-outlet>
         </div>
 
@@ -16,12 +16,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListPageComponent implements OnInit {
 
-
+    title:string;
     constructor(private router: Router, private route: ActivatedRoute) { }
 
     ngOnInit() {
         console.log('init', this.route)
 
+        this.title = this.route.snapshot.data['title'];
 
     }
 
