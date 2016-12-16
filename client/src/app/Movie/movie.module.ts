@@ -1,14 +1,19 @@
-import { MovieThumbComponent } from './movieThumb.component';
-import { movieListPageSidebarComponent } from './movieListPageSidebar.component';
-import { MovieListPageComponent } from './movieListPage.component';
-import { HttpModule } from '@angular/http';
+//import reusable components
+import { ItemDetailsComponent } from './../Reusable/itemDetails.component';
+import { ListPageSidebarComponent } from './../Reusable/listPageSidebar.component';
+import { ItemThumbComponent } from './../Reusable/itemThumb.component';
+import { ItemListComponent } from './../Reusable/itemList.component';
+import { ListPageComponent } from './../Reusable/itemListPage.component';
+
+//import necessary services
 import { UserService } from './../User/user.service';
 import { MovieResolver } from './movie.resolver';
-import { MovieDetailsComponent } from './movieDetails.component';
 import { MovieService } from './movie.service';
-import { MovieListComponent } from './movieList.component';
+
+//import angular modules
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { HttpModule } from '@angular/http';
 
 
 const routes: Routes = [
@@ -17,20 +22,20 @@ const routes: Routes = [
         children: [
             {
                 path: '',
-                component: MovieListPageComponent,
+                component: ListPageComponent,
                 children: [
                     {
                         path: 'popular',
-                        component: MovieListComponent,
+                        component: ItemListComponent,
                         resolve: {
-                            movies: MovieResolver
+                            items: MovieResolver
                         }
                     },
                     {
                         path: 'trending',
-                        component: MovieListComponent,
+                        component: ItemListComponent,
                         resolve: {
-                            movies: MovieResolver
+                            items: MovieResolver
                         }
                     },
                     {
@@ -42,9 +47,9 @@ const routes: Routes = [
             },
             {
                 path: ':id',
-                component: MovieDetailsComponent,
+                component: ItemDetailsComponent,
                 resolve: {
-                    movie: MovieResolver
+                    item: MovieResolver
                 }
             }]
     },
@@ -57,12 +62,13 @@ const routes: Routes = [
 })
 export class MovieRoutingModule { }
 
-const MovieRoutingComponents = [
-    MovieListComponent, 
-    MovieListPageComponent,
-    MovieDetailsComponent,
-    movieListPageSidebarComponent,
-    MovieThumbComponent];
+const MovieRoutingComponents = [ 
+    ItemDetailsComponent,   
+    ListPageComponent,
+    ItemListComponent,
+    ItemThumbComponent,
+    ListPageSidebarComponent
+    ];
 
 export const MovieModule = {
     routing: MovieRoutingModule,

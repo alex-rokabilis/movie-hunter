@@ -2,7 +2,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'sidebar',
+    selector: 'list-sidebar',
     styles: [
         ':host { display: flex; width:25%; background:rgba(8, 8, 8, 0.68) }',
         '.sidebar{ width:100%;}',
@@ -11,10 +11,11 @@ import { Component, OnInit } from '@angular/core';
         'a.active {color:red}',
         'ul {list-style-type: none; padding:0; text-align:center;}',
         '.navigation {text-align:center;}',
+        '.navigation a:hover {color:red}',
     ],
     template: `
             <div class="sidebar">
-                <h3>Movies</h3>
+                <h3>Movies Or Series</h3>
                 <br>
                 <div class='navigation'>
                     <a href="javascript:void(0)" (click)='previous()'>Previous</a>
@@ -32,15 +33,11 @@ import { Component, OnInit } from '@angular/core';
                 
             </div>`
 })
-export class movieListPageSidebarComponent implements OnInit {
+export class ListPageSidebarComponent implements OnInit {
 
     constructor(private router: Router, private route: ActivatedRoute) { }
 
-    ngOnInit() {
-        console.log('init', this.route,this.router)
-
-
-    }
+    ngOnInit() {}
 
     next() {
 

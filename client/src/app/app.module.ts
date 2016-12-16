@@ -28,7 +28,7 @@ const routes: Routes = [
     AppComponent,
     HomePageComponent,
     NavbarComponent,
-    //LoaderComponent,
+    LoaderComponent,
     ...LoginModule.components,
     ...MovieModule.components
   ],

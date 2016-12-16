@@ -8,37 +8,30 @@ import {
 } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
+
+// <div *ngIf="loading"
+//         style="
+//             position: absolute;
+//             background: rgba(0, 0, 0, 0.73);
+//             height: 100%;
+//             width: 100%;
+//             left: 0;
+//             top: 0;
+//             z-index: 100;
+//     "></div>
 @Component({
     selector: 'loader',
     template: ` 
-    <div *ngIf="loading"
-        style="
-            display: table;
-            position: absolute;
-            height: 100%;
-            width: 100%;
-            left: 0;
-            top: 0;
-            color: white;
-            z-index: 101;
-    ">
-        <p style="
-            display: table-cell;
-            vertical-align: middle;
-            text-align: center;
-        ">{{loadingText}}
-        </p>
+    <div *ngIf="loading" style="
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 93px;
+"> 
+        <p> {{loadingText}} </p>
     </div>
-    <div *ngIf="loading"
-        style="
-            position: absolute;
-            background: rgba(0, 0, 0, 0.73);
-            height: 100%;
-            width: 100%;
-            left: 0;
-            top: 0;
-            z-index: 100;
-    "></div>`
+    
+    `
 })
 export class LoaderComponent implements OnInit {
 
