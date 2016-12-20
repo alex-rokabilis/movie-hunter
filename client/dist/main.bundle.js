@@ -1,440 +1,10 @@
 webpackJsonp([0,3],{
 
-/***/ 204:
+/***/ 137:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return APP_CONFIG; });
-
-const config = {
-    traktApiEndpoint: 'https://api.trakt.tv',
-    tmdbApiEndpoint: 'https://api.themoviedb.org/3',
-    tmdbApiBackdropEndpoint: 'http://image.tmdb.org/t/p/w780',
-    tmdbApiPosterEndpoint: 'http://image.tmdb.org/t/p/w500',
-    title: 'Movie Hunter'
-};
-/* harmony export (immutable) */ exports["c"] = config;
-
-let APP_CONFIG = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* OpaqueToken */]('app.config');
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/app-config.js.map
-
-/***/ },
-
-/***/ 320:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(204);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(73);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__ = __webpack_require__(365);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__ = __webpack_require__(366);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieService; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-
-
-
-
-
-let MovieService = class MovieService {
-    constructor(http, user, config) {
-        this.http = http;
-        this.user = user;
-        this.config = config;
-        console.log(this.config);
-    }
-    getMovieImages(movieID) {
-        console.log('searching images for::', movieID);
-        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
-            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
-            url: this.config.tmdbApiEndpoint + "/movie/" + movieID,
-            search: "api_key=d26a0629dcc3f037723d6a91f4f46fc9"
-        });
-        return this.http.request(requestOptions)
-            .map(response => response.json())
-            .map(data => ({
-            backdrop_path: data.backdrop_path ? this.config.tmdbApiBackdropEndpoint + data.backdrop_path : undefined,
-            poster_path: data.poster_path ? this.config.tmdbApiPosterEndpoint + data.poster_path : undefined
-        }))
-            .catch(err => {
-            console.error(err);
-            return __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].of({
-                backdrop_path: undefined,
-                poster_path: undefined
-            });
-        })
-            .toPromise();
-    }
-    getPopular(page = '1', limit = '25') {
-        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* URLSearchParams */]();
-        requestSearchParams.append('page', page);
-        requestSearchParams.append('limit', limit);
-        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
-            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
-            url: this.config.traktApiEndpoint + "/movies/popular",
-            search: requestSearchParams,
-            headers: this.user.trakt_http_headers
-        });
-        return this.http.request(requestOptions)
-            .do(console.log.bind(console))
-            .map(response => response.json())
-            .toPromise()
-            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
-            .then(movies => Promise.all(movies))
-            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
-        //.then(console.log.bind(console))
-    }
-    getTrending(page = '1', limit = '25') {
-        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* URLSearchParams */]();
-        requestSearchParams.append('page', page || '1');
-        requestSearchParams.append('limit', limit || '25');
-        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
-            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
-            url: this.config.traktApiEndpoint + "/movies/trending",
-            search: requestSearchParams,
-            headers: this.user.trakt_http_headers
-        });
-        return this.http.request(requestOptions)
-            .map(response => response.json())
-            .map(response => response.map(({ movie, watchers }) => {
-            movie.watchers = watchers;
-            return movie;
-        }))
-            .toPromise()
-            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
-            .then(movies => Promise.all(movies))
-            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
-        //.then(console.log.bind(console))
-    }
-    getMovie(id) {
-        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
-            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
-            url: this.config.traktApiEndpoint + "/movies/" + id,
-            search: "extended=full",
-            headers: this.user.trakt_http_headers
-        });
-        return this.http.request(requestOptions)
-            .map(response => response.json())
-            .do(console.log.bind(console))
-            .toPromise()
-            .then(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)]))
-            .then(([movieData, movieImages]) => Object.assign(movieData, movieImages));
-        //.then(console.log.bind(console))
-    }
-};
-MovieService = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["b" /* Injectable */])(),
-    __param(2, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["y" /* Inject */])(__WEBPACK_IMPORTED_MODULE_0__app_config__["a" /* APP_CONFIG */])), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"]) === 'function' && _c) || Object])
-], MovieService);
-var _a, _b, _c;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movie.service.js.map
-
-/***/ },
-
-/***/ 321:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemDetailsComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-let ItemDetailsComponent = class ItemDetailsComponent {
-    constructor(route) {
-        this.route = route;
-    }
-    ngOnInit() {
-        this.item = this.item2 || this.route.snapshot.data['item'];
-    }
-};
-__decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["B" /* Input */])('item'), 
-    __metadata('design:type', Object)
-], ItemDetailsComponent.prototype, "item2", void 0);
-ItemDetailsComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
-        selector: 'item-details',
-        template: `
-        <h3>{{item.title}}</h3>
-        <div>
-            <img src="{{item.poster_path}}">
-        </div>
-        <pre>{{ item | json}}</pre>
-    `
-    }), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _a) || Object])
-], ItemDetailsComponent);
-var _a;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemDetails.component.js.map
-
-/***/ },
-
-/***/ 322:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__ = __webpack_require__(664);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemListComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-
-// 'item-thumb:nth-child(1) { width: 48%; margin-right: 2%;}',
-// 'item-thumb:nth-child(2) { width: 48%; margin-right: 0;}',
-let ItemListComponent = class ItemListComponent {
-    constructor(route) {
-        this.route = route;
-    }
-    ngOnInit() {
-        console.log(this.route);
-        this.route.data.pluck('items').subscribe(m => this.items = m);
-    }
-};
-ItemListComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
-        selector: 'item-list',
-        styles: [
-            ':host { width:100%; margin-left: 2%;margin-right: 2%;margin-top: 10px; }',
-            'item-thumb { width: 32%; margin-right: 2%;}',
-            'item-thumb:nth-child(3n+3) { margin-right: 0; }',
-        ],
-        template: `       
-        <item-thumb *ngFor='let item of items' [item]='item' ></item-thumb>
-        `
-    }), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _a) || Object])
-], ItemListComponent);
-var _a;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemList.component.js.map
-
-/***/ },
-
-/***/ 323:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ListPageComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-let ListPageComponent = class ListPageComponent {
-    constructor(router, route) {
-        this.router = router;
-        this.route = route;
-    }
-    ngOnInit() {
-        console.log('init', this.route);
-        this.title = this.route.snapshot.data['title'];
-    }
-};
-ListPageComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
-        selector: 'item-list-page',
-        styles: [
-            '.container { display:inline-flex; }',
-        ],
-        template: `
-        <div class="container">
-            <list-sidebar [title]="title"></list-sidebar>
-            <router-outlet></router-outlet>
-        </div>
-
-    `
-    }), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _b) || Object])
-], ListPageComponent);
-var _a, _b;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemListPage.component.js.map
-
-/***/ },
-
-/***/ 324:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemThumbComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-let ItemThumbComponent = class ItemThumbComponent {
-    constructor() {
-    }
-    ngOnInit() { }
-};
-__decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Input */])(), 
-    __metadata('design:type', Object)
-], ItemThumbComponent.prototype, "item", void 0);
-ItemThumbComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
-        selector: 'item-thumb',
-        styles: [
-            ':host { display: inline-table; text-align: center;    }',
-            '.img-container {background-color: #1d1d1d;position: relative;overflow: hidden;}',
-            '.img-container img {min-height: 100%;position: relative; top: 0; left: 0;display: block;    width: 100%;vertical-align: middle;}'
-        ],
-        template: `
-            <a [routerLink]='["../", item.ids?.slug]'>
-                
-                <delayed-image [image_src]="item.backdrop_path"></delayed-image>
-                <p>{{item.title}}</p>
-            </a>
-
-    `
-    }), 
-    __metadata('design:paramtypes', [])
-], ItemThumbComponent);
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemThumb.component.js.map
-
-/***/ },
-
-/***/ 325:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ListPageSidebarComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-let ListPageSidebarComponent = class ListPageSidebarComponent {
-    constructor(router, route) {
-        this.router = router;
-        this.route = route;
-    }
-    ngOnInit() { }
-    next() {
-        let relativeRoute = this.route.firstChild ? this.route.firstChild : this.route;
-        let currentPage = relativeRoute.snapshot.params['page'];
-        currentPage = currentPage ? +currentPage : 1;
-        this.router.navigate([{ page: currentPage + 1 }], { relativeTo: relativeRoute });
-    }
-    previous() {
-        let relativeRoute = this.route.firstChild ? this.route.firstChild : this.route;
-        let currentPage = relativeRoute.snapshot.params['page'];
-        currentPage = currentPage ? +currentPage : 1;
-        if (currentPage == 1)
-            return;
-        this.router.navigate([{ page: currentPage - 1 }], { relativeTo: relativeRoute });
-    }
-};
-__decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["B" /* Input */])('title'), 
-    __metadata('design:type', String)
-], ListPageSidebarComponent.prototype, "title", void 0);
-ListPageSidebarComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
-        selector: 'list-sidebar',
-        styles: [
-            ':host { display: flex; width:25%; background:rgba(8, 8, 8, 0.68) }',
-            '.sidebar{ width:100%;}',
-            ' h3 {color:white; text-align:center}',
-            'a {color:white}',
-            'a.active {color:red}',
-            'ul {list-style-type: none; padding:0; text-align:center;}',
-            '.navigation {text-align:center;}',
-            '.navigation a:hover {color:red}',
-        ],
-        template: `
-            <div class="sidebar">
-                <h3><u>{{title}}</u></h3>
-                <br>
-                <div class='navigation'>
-                    <a href="javascript:void(0)" (click)='previous()'>Previous</a>
-                    <a href="javascript:void(0)" (click)="next()" >Next</a>       
-                </div>
-                         
-                <ul>
-                    <li>
-                        <a routerLinkActive="active" routerLink='popular'>Popular</a>
-                    </li>
-                    <li>
-                        <a routerLinkActive="active" routerLink='trending'>Trending</a>
-                    </li>
-                </ul>
-                
-            </div>`
-    }), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _b) || Object])
-], ListPageSidebarComponent);
-var _a, _b;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/listPageSidebar.component.js.map
-
-/***/ },
-
-/***/ 326:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(205);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(0);
@@ -573,6 +143,437 @@ var _a, _b, _c;
 
 /***/ },
 
+/***/ 205:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return APP_CONFIG; });
+
+const config = {
+    traktApiEndpoint: 'https://api.trakt.tv',
+    tmdbApiEndpoint: 'https://api.themoviedb.org/3',
+    tmdbApiBackdropEndpoint: 'http://image.tmdb.org/t/p/w780',
+    tmdbApiPosterEndpoint: 'http://image.tmdb.org/t/p/w500',
+    title: 'Movie Hunter'
+};
+/* harmony export (immutable) */ exports["c"] = config;
+
+let APP_CONFIG = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* OpaqueToken */]('app.config');
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/app-config.js.map
+
+/***/ },
+
+/***/ 321:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_config__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(73);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__ = __webpack_require__(365);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_add_observable_of__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__ = __webpack_require__(366);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieService; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
+
+let MovieService = class MovieService {
+    constructor(http, user, config) {
+        this.http = http;
+        this.user = user;
+        this.config = config;
+        console.log(this.config);
+    }
+    getMovieImages(movieID) {
+        console.log('searching images for::', movieID);
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
+            url: this.config.tmdbApiEndpoint + "/movie/" + movieID,
+            search: "api_key=d26a0629dcc3f037723d6a91f4f46fc9"
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .map(data => ({
+            backdrop_path: data.backdrop_path ? this.config.tmdbApiBackdropEndpoint + data.backdrop_path : undefined,
+            poster_path: data.poster_path ? this.config.tmdbApiPosterEndpoint + data.poster_path : undefined
+        }))
+            .catch(err => {
+            console.error(err);
+            return __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].of({
+                backdrop_path: undefined,
+                poster_path: undefined
+            });
+        })
+            .toPromise();
+    }
+    getPopular(page = '1', limit = '25') {
+        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* URLSearchParams */]();
+        requestSearchParams.append('page', page);
+        requestSearchParams.append('limit', limit);
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/popular",
+            search: requestSearchParams,
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .do(console.log.bind(console))
+            .map(response => response.json())
+            .toPromise()
+            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
+            .then(movies => Promise.all(movies))
+            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
+        //.then(console.log.bind(console))
+    }
+    getTrending(page = '1', limit = '25') {
+        let requestSearchParams = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* URLSearchParams */]();
+        requestSearchParams.append('page', page || '1');
+        requestSearchParams.append('limit', limit || '25');
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/trending",
+            search: requestSearchParams,
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .map(response => response.map(({ movie, watchers }) => {
+            movie.watchers = watchers;
+            return movie;
+        }))
+            .toPromise()
+            .then(movies => movies.map(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)])))
+            .then(movies => Promise.all(movies))
+            .then(movies => movies.map(([movieData, movieImages]) => Object.assign(movieData, movieImages)));
+        //.then(console.log.bind(console))
+    }
+    getMovie(id) {
+        let requestOptions = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* Request */]({
+            method: __WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* RequestMethod */].Get,
+            url: this.config.traktApiEndpoint + "/movies/" + id,
+            search: "extended=full",
+            headers: this.user.trakt_http_headers
+        });
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .do(console.log.bind(console))
+            .toPromise()
+            .then(movie => Promise.all([movie, this.getMovieImages(movie.ids.tmdb)]))
+            .then(([movieData, movieImages]) => Object.assign(movieData, movieImages));
+        //.then(console.log.bind(console))
+    }
+};
+MovieService = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["b" /* Injectable */])(),
+    __param(2, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__angular_core__["y" /* Inject */])(__WEBPACK_IMPORTED_MODULE_0__app_config__["a" /* APP_CONFIG */])), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* Http */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__User_user_service__["a" /* UserService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__app_config__["AppConfig"]) === 'function' && _c) || Object])
+], MovieService);
+var _a, _b, _c;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/movie.service.js.map
+
+/***/ },
+
+/***/ 322:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemDetailsComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+let ItemDetailsComponent = class ItemDetailsComponent {
+    constructor(route) {
+        this.route = route;
+    }
+    ngOnInit() {
+        this.item = this.item2 || this.route.snapshot.data['item'];
+    }
+};
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["B" /* Input */])('item'), 
+    __metadata('design:type', Object)
+], ItemDetailsComponent.prototype, "item2", void 0);
+ItemDetailsComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        selector: 'item-details',
+        template: `
+        <h3>{{item.title}}</h3>
+        <div>
+            <img src="{{item.poster_path}}">
+        </div>
+        <!--  <pre>{{ item | json}}</pre> -->
+       
+    `
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _a) || Object])
+], ItemDetailsComponent);
+var _a;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemDetails.component.js.map
+
+/***/ },
+
+/***/ 323:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__ = __webpack_require__(666);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_pluck__);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemListComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+// 'item-thumb:nth-child(1) { width: 48%; margin-right: 2%;}',
+// 'item-thumb:nth-child(2) { width: 48%; margin-right: 0;}',
+let ItemListComponent = class ItemListComponent {
+    constructor(route) {
+        this.route = route;
+    }
+    ngOnInit() {
+        console.log(this.route);
+        this.route.data.pluck('items').subscribe(m => this.items = m);
+    }
+};
+ItemListComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        selector: 'item-list',
+        styles: [
+            ':host { width:100%; margin-left: 2%;margin-right: 2%;margin-top: 10px; }',
+            'item-thumb { width: 32%; margin-right: 2%;}',
+            'item-thumb:nth-child(3n+3) { margin-right: 0; }',
+        ],
+        template: `       
+        <item-thumb *ngFor='let item of items' [item]='item' ></item-thumb>
+        `
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _a) || Object])
+], ItemListComponent);
+var _a;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemList.component.js.map
+
+/***/ },
+
+/***/ 324:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ListPageComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+let ListPageComponent = class ListPageComponent {
+    constructor(router, route) {
+        this.router = router;
+        this.route = route;
+    }
+    ngOnInit() {
+        console.log('init', this.route);
+        this.title = this.route.snapshot.data['title'];
+    }
+};
+ListPageComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        selector: 'item-list-page',
+        styles: [
+            '.container { display:inline-flex; }',
+        ],
+        template: `
+        <div class="container">
+            <list-sidebar [title]="title"></list-sidebar>
+            <router-outlet></router-outlet>
+        </div>
+
+    `
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _b) || Object])
+], ListPageComponent);
+var _a, _b;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemListPage.component.js.map
+
+/***/ },
+
+/***/ 325:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ItemThumbComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+let ItemThumbComponent = class ItemThumbComponent {
+    constructor() {
+    }
+    ngOnInit() { }
+};
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Input */])(), 
+    __metadata('design:type', Object)
+], ItemThumbComponent.prototype, "item", void 0);
+ItemThumbComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
+        selector: 'item-thumb',
+        styles: [
+            ':host { display: inline-table; text-align: center;    }',
+            '.img-container {background-color: #1d1d1d;position: relative;overflow: hidden;}',
+            '.img-container img {min-height: 100%;position: relative; top: 0; left: 0;display: block;    width: 100%;vertical-align: middle;}'
+        ],
+        template: `
+            <a [routerLink]='["../", item.ids?.slug]'>
+                
+                <delayed-image [image_src]="item.backdrop_path"></delayed-image>
+                <p>{{item.title}}</p>
+            </a>
+
+    `
+    }), 
+    __metadata('design:paramtypes', [])
+], ItemThumbComponent);
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/itemThumb.component.js.map
+
+/***/ },
+
+/***/ 326:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return ListPageSidebarComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+let ListPageSidebarComponent = class ListPageSidebarComponent {
+    constructor(router, route) {
+        this.router = router;
+        this.route = route;
+    }
+    ngOnInit() { }
+    next() {
+        let relativeRoute = this.route.firstChild ? this.route.firstChild : this.route;
+        let currentPage = relativeRoute.snapshot.params['page'];
+        currentPage = currentPage ? +currentPage : 1;
+        this.router.navigate([{ page: currentPage + 1 }], { relativeTo: relativeRoute });
+    }
+    previous() {
+        let relativeRoute = this.route.firstChild ? this.route.firstChild : this.route;
+        let currentPage = relativeRoute.snapshot.params['page'];
+        currentPage = currentPage ? +currentPage : 1;
+        if (currentPage == 1)
+            return;
+        this.router.navigate([{ page: currentPage - 1 }], { relativeTo: relativeRoute });
+    }
+};
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["B" /* Input */])('title'), 
+    __metadata('design:type', String)
+], ListPageSidebarComponent.prototype, "title", void 0);
+ListPageSidebarComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* Component */])({
+        selector: 'list-sidebar',
+        styles: [
+            ':host { display: flex; width:25%; background:rgba(8, 8, 8, 0.68) }',
+            '.sidebar{ width:100%;}',
+            ' h3 {color:white; text-align:center}',
+            'a {color:white}',
+            'a.active {color:red}',
+            'ul {list-style-type: none; padding:0; text-align:center;}',
+            '.navigation {text-align:center;}',
+            '.navigation a:hover {color:red}',
+        ],
+        template: `
+            <div class="sidebar">
+                <h3><u>{{title}}</u></h3>
+                <br>
+                <div class='navigation'>
+                    <a href="javascript:void(0)" (click)='previous()'>Previous</a>
+                    <a href="javascript:void(0)" (click)="next()" >Next</a>       
+                </div>
+                         
+                <ul>
+                    <li>
+                        <a routerLinkActive="active" routerLink='popular'>Popular</a>
+                    </li>
+                    <li>
+                        <a routerLinkActive="active" routerLink='trending'>Trending</a>
+                    </li>
+                </ul>
+                
+            </div>`
+    }), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["e" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_router__["g" /* ActivatedRoute */]) === 'function' && _b) || Object])
+], ListPageSidebarComponent);
+var _a, _b;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/listPageSidebar.component.js.map
+
+/***/ },
+
 /***/ 327:
 /***/ function(module, exports, __webpack_require__) {
 
@@ -634,12 +635,12 @@ webpackEmptyContext.id = 380;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(503);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(505);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__polyfills_ts__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(461);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(502);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app___ = __webpack_require__(501);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(504);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app___ = __webpack_require__(503);
 
 
 
@@ -659,9 +660,9 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dyna
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_http__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__ = __webpack_require__(662);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__ = __webpack_require__(664);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_do__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__ = __webpack_require__(661);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__ = __webpack_require__(663);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_observable_throw__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
@@ -991,9 +992,9 @@ var _a, _b;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__User_user_service__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(663);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(665);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__ = __webpack_require__(665);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__ = __webpack_require__(667);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return LoginPageComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -1143,14 +1144,14 @@ var _a;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reusable_itemDetails_component__ = __webpack_require__(321);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Reusable_listPageSidebar_component__ = __webpack_require__(325);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Reusable_itemThumb_component__ = __webpack_require__(324);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__ = __webpack_require__(322);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemListPage_component__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reusable_itemDetails_component__ = __webpack_require__(322);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Reusable_listPageSidebar_component__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Reusable_itemThumb_component__ = __webpack_require__(325);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Reusable_itemList_component__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemListPage_component__ = __webpack_require__(324);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__User_user_service__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__movie_resolver__ = __webpack_require__(494);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__movie_service__ = __webpack_require__(320);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__movie_service__ = __webpack_require__(321);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_router__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_http__ = __webpack_require__(73);
@@ -1246,7 +1247,7 @@ const MovieModule = {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__movie_service__ = __webpack_require__(320);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__movie_service__ = __webpack_require__(321);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(16);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return MovieResolver; });
@@ -1428,18 +1429,112 @@ var _a, _b;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__seasons_resolver__ = __webpack_require__(687);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__seasonsList_component__ = __webpack_require__(686);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tvDetailsPage_component__ = __webpack_require__(499);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(137);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(16);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return SeasonsResolver; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+let SeasonsResolver = class SeasonsResolver {
+    constructor(tvService, router) {
+        this.tvService = tvService;
+        this.router = router;
+    }
+    resolve(route) {
+        const resolverData = route.data['seasonsResolver'];
+        if (resolverData == "list")
+            return this.tvService.getSeasons(route.params['id'])
+                .catch(err => {
+                console.error("err happend", err);
+                if (err.status == 403)
+                    this.router.navigate(['/login']);
+                return err;
+            });
+        return Promise.reject("Resolver doesn't know what to do!");
+    }
+};
+SeasonsResolver = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["b" /* Injectable */])(), 
+    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["e" /* Router */]) === 'function' && _b) || Object])
+], SeasonsResolver);
+var _a, _b;
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/seasons.resolver.js.map
+
+/***/ },
+
+/***/ 498:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return SeasonsListComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+let SeasonsListComponent = class SeasonsListComponent {
+    constructor() {
+    }
+    ngOnInit() {
+        this.seasons.sort((a, b) => b.number - a.number);
+    }
+};
+__decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Input */])('seasons'), 
+    __metadata('design:type', Object)
+], SeasonsListComponent.prototype, "seasons", void 0);
+SeasonsListComponent = __decorate([
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
+        selector: 'seasons-list',
+        template: `
+        <h3>Seasons List</h3>
+
+        <ul>
+            <li *ngFor="let season of seasons">
+                <p>Season -- {{season.number}}</p>
+            </li>
+        </ul>
+        <!-- <pre>{{seasons | json}}</pre>-->
+    `
+    }), 
+    __metadata('design:paramtypes', [])
+], SeasonsListComponent);
+//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/seasonsList.component.js.map
+
+/***/ },
+
+/***/ 499:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__seasons_resolver__ = __webpack_require__(497);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__seasonsList_component__ = __webpack_require__(498);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tvDetailsPage_component__ = __webpack_require__(501);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Reusable_delayedImage_components__ = __webpack_require__(496);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemDetails_component__ = __webpack_require__(321);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Reusable_listPageSidebar_component__ = __webpack_require__(325);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Reusable_itemThumb_component__ = __webpack_require__(324);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Reusable_itemList_component__ = __webpack_require__(322);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Reusable_itemListPage_component__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Reusable_itemDetails_component__ = __webpack_require__(322);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Reusable_listPageSidebar_component__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Reusable_itemThumb_component__ = __webpack_require__(325);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Reusable_itemList_component__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Reusable_itemListPage_component__ = __webpack_require__(324);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__User_user_service__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__tv_resolver__ = __webpack_require__(498);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__tv_service__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__tv_resolver__ = __webpack_require__(500);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__tv_service__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__angular_router__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__angular_http__ = __webpack_require__(73);
@@ -1549,11 +1644,11 @@ const TvModule = {
 
 /***/ },
 
-/***/ 498:
+/***/ 500:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(16);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return TvResolver; });
@@ -1613,11 +1708,11 @@ var _a, _b;
 
 /***/ },
 
-/***/ 499:
+/***/ 501:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(326);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return TVDetailsPageComponent; });
@@ -1649,7 +1744,7 @@ TVDetailsPageComponent = __decorate([
         template: `
         TV Series details
         <item-details [item]="show"></item-details>
-        <seasons-list [seasons]="seasons"><seasons-list>
+        <seasons-list [seasons]="seasons"></seasons-list>
     `
     }), 
     __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["g" /* ActivatedRoute */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__angular_router__["g" /* ActivatedRoute */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */]) === 'function' && _b) || Object])
@@ -1659,15 +1754,15 @@ var _a, _b;
 
 /***/ },
 
-/***/ 500:
+/***/ 502:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Loader_loader_component__ = __webpack_require__(488);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_config__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_config__ = __webpack_require__(205);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Login_login_module__ = __webpack_require__(489);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Movie_movie_module__ = __webpack_require__(493);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__TV_tv_module__ = __webpack_require__(497);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__TV_tv_module__ = __webpack_require__(499);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Navbar_navbar_component__ = __webpack_require__(495);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Home_homePage_component__ = __webpack_require__(487);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__app_component__ = __webpack_require__(327);
@@ -1732,12 +1827,12 @@ AppModule = __decorate([
 
 /***/ },
 
-/***/ 501:
+/***/ 503:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_component__ = __webpack_require__(327);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(500);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(502);
 /* unused harmony namespace reexport */
 /* harmony namespace reexport (by used) */ __webpack_require__.d(exports, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__app_module__["a"]; });
 
@@ -1746,7 +1841,7 @@ AppModule = __decorate([
 
 /***/ },
 
-/***/ 502:
+/***/ 504:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1763,41 +1858,41 @@ const environment = {
 
 /***/ },
 
-/***/ 503:
+/***/ 505:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(517);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(519);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(510);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(512);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(506);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(508);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(512);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(514);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(511);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(513);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(509);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(511);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(508);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(510);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(516);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(518);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(505);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(507);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(504);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(506);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(514);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(516);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(507);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(509);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(515);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(517);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(513);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(515);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(518);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(520);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(683);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(685);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__);
 
 
@@ -1819,100 +1914,13 @@ const environment = {
 
 /***/ },
 
-/***/ 684:
+/***/ 686:
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(381);
 
 
-/***/ },
-
-/***/ 686:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return SeasonsListComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-let SeasonsListComponent = class SeasonsListComponent {
-    constructor() {
-    }
-    ngOnInit() {
-    }
-};
-__decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Input */])('seasons'), 
-    __metadata('design:type', Object)
-], SeasonsListComponent.prototype, "seasons", void 0);
-SeasonsListComponent = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
-        selector: 'seasons-list',
-        template: `
-        <h3>Seasons List</h3>
-        <pre>{{seasons | json}}</pre>
-    `
-    }), 
-    __metadata('design:paramtypes', [])
-], SeasonsListComponent);
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/seasonsList.component.js.map
-
-/***/ },
-
-/***/ 687:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tv_service__ = __webpack_require__(326);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(16);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return SeasonsResolver; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-
-let SeasonsResolver = class SeasonsResolver {
-    constructor(tvService, router) {
-        this.tvService = tvService;
-        this.router = router;
-    }
-    resolve(route) {
-        const resolverData = route.data['seasonsResolver'];
-        if (resolverData == "list")
-            return this.tvService.getSeasons(route.params['id'])
-                .catch(err => {
-                console.error("err happend", err);
-                if (err.status == 403)
-                    this.router.navigate(['/login']);
-                return err;
-            });
-        return Promise.reject("Resolver doesn't know what to do!");
-    }
-};
-SeasonsResolver = __decorate([
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["b" /* Injectable */])(), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__tv_service__["a" /* TvService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["e" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["e" /* Router */]) === 'function' && _b) || Object])
-], SeasonsResolver);
-var _a, _b;
-//# sourceMappingURL=/mnt/61A95524259CB759/douleies/movie-hunter/client/src/seasons.resolver.js.map
-
 /***/ }
 
-},[684]);
+},[686]);
 //# sourceMappingURL=main.bundle.map

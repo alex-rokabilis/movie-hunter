@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
     template: `
         TV Series details
         <item-details [item]="show"></item-details>
-        <seasons-list [seasons]="seasons"><seasons-list>
+        <seasons-list [seasons]="seasons"></seasons-list>
     `
 })
 export class TVDetailsPageComponent implements OnInit {

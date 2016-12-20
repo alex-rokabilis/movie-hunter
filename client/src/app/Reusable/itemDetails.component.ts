@@ -8,7 +8,8 @@ import { Component, OnInit, Input } from '@angular/core';
         <div>
             <img src="{{item.poster_path}}">
         </div>
-        <pre>{{ item | json}}</pre>
+        <!--  <pre>{{ item | json}}</pre> -->
+       
     `
 })
 export class ItemDetailsComponent implements OnInit {
