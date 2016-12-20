@@ -1,5 +1,5 @@
-import { ActivatedRoute } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'item-details',
@@ -14,14 +14,11 @@ import { Component, OnInit } from '@angular/core';
 export class ItemDetailsComponent implements OnInit {
 
     item;
+    @Input('item') item2;
     constructor(private route: ActivatedRoute) { }
 
     ngOnInit() {
-
-        this.route.data
-            .pluck('item')
-            .subscribe((m) => this.item = m)
-
+        this.item = this.item2 || this.route.snapshot.data['item']
     }
 
 }

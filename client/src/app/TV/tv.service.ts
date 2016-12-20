@@ -118,4 +118,21 @@ export class TvService {
         //.then(console.log.bind(console))
     }
 
+    public getSeasons(id: string): Promise<any> {
+
+        let requestOptions = new Request({
+            method: RequestMethod.Get,
+            url: this.config.traktApiEndpoint + "/shows/" + id + "/seasons",
+            search: "extended=full",
+            headers: this.user.trakt_http_headers
+        });
+
+        return this.http.request(requestOptions)
+            .map(response => response.json())
+            .do(console.log.bind(console))
+            .toPromise()
+
+        //.then(console.log.bind(console))
+    }
+
 }

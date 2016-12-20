@@ -12,29 +12,33 @@ export class TvResolver implements Resolve<any> {
 
     resolve(route: ActivatedRouteSnapshot): Promise<any> {
 
-        const path = route.routeConfig.path;
+        //const path = route.routeConfig.path;
 
-        if (path == "popular")
+        const resolverData = route.data['tvResolver']
+
+        if (resolverData == "popular")
             return this.tvService.getPopular(route.params['page'])
                 .catch(err => {
                     console.error("err happend", err)
                     if (err.status == 403) this.router.navigate(['/login']);
                     return err;
                 })
-        if (path == "trending")
+        if (resolverData == "trending")
             return this.tvService.getTrending(route.params['page'])
                 .catch(err => {
                     console.error("err happend", err)
                     if (err.status == 403) this.router.navigate(['/login']);
                     return err;
                 })
-        if (path == ":id")
+        if (resolverData == "single")
             return this.tvService.getShow(route.params['id'])
-                .catch(err => {
-                    console.error("err happend", err)
-                    if (err.status == 403) this.router.navigate(['/login']);
-                    return err;
-                })
+            .catch(err => {
+                console.error("err happend", err)
+                if (err.status == 403) this.router.navigate(['/login']);
+                return err;
+            })
+
+        return Promise.reject("Resolver doesn't know what to do!")
 
 
     }
