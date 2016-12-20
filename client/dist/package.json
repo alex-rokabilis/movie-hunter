@@ -1,8 +1,12 @@
 {
     "name": "hello world",
-    "main" : "index.html",
+    "main" : "splash.html",
     "window":{
-        "width": 720,
-        "height": 740
+        "width": 620,
+        "height": 350,
+        "position": "center",
+        "frame": false,
+        "show_in_taskbar": false,
+        "transparent": true
     }
 }

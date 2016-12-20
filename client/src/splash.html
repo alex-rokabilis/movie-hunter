@@ -1,0 +1,52 @@
+<html>
+    <style>
+        .hidden {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s 2s, opacity 2s linear;
+            }
+    </style>
+    <body style="margin:0;background-color:rgba(0,0,0,0);">
+        <img style="width:100%;" src="http://www.freebiesgallery.com/wp-content/uploads/2012/12/splash-screen-04.jpg" alt="">
+    </body >
+    <script>
+        var socket = new WebSocket("ws://localhost:4359");
+        var win = nw.Window.get();
+        //win.showDevTools();
+        socket.onmessage = function(msg){
+        
+            win.restore();
+            win.focus();
+            //win.showDevTools();
+            chrome.runtime.reload()
+        
+        }
+        
+        win.on('loaded',function(){
+            console.log("fully loaded!")
+            
+            nw.Window.open("index.html",{
+                "show":false,
+                 "width": 720,
+                "height": 640,
+                "position": "center",
+                "frame": true,
+                "show_in_taskbar": true
+                
+            },function(new_win){
+                console.log("new win::",new_win)
+                setTimeout( () => {
+                    document.body.className = "hidden";
+
+                    setTimeout( () =>{
+                        win.hide();
+                        new_win.show();
+                    },0)
+                    
+                },0)
+                
+            })    
+        })
+        
+  </script>
+</html>

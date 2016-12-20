@@ -6,10 +6,10 @@ webpackJsonp([1,3],{
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(652);
+var content = __webpack_require__(653);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(680)(content, {});
+var update = __webpack_require__(681)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -27,10 +27,10 @@ if(false) {
 
 /***/ },
 
-/***/ 652:
+/***/ 653:
 /***/ function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(653)();
+exports = module.exports = __webpack_require__(654)();
 // imports
 
 
@@ -42,7 +42,7 @@ exports.push([module.i, " /*You can add global styles to this file, and also imp
 
 /***/ },
 
-/***/ 653:
+/***/ 654:
 /***/ function(module, exports) {
 
 /*
@@ -99,7 +99,7 @@ module.exports = function() {
 
 /***/ },
 
-/***/ 680:
+/***/ 681:
 /***/ function(module, exports) {
 
 /*
@@ -352,7 +352,7 @@ function updateLink(linkElement, obj) {
 
 /***/ },
 
-/***/ 683:
+/***/ 684:
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(382);
@@ -360,5 +360,5 @@ module.exports = __webpack_require__(382);
 
 /***/ }
 
-},[683]);
+},[684]);
 //# sourceMappingURL=styles.bundle.map

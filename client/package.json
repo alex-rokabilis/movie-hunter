@@ -4,7 +4,7 @@
   "license": "MIT",
   "angular-cli": {},
   "scripts": {
-    "nw": "nw dist",
+    "nw": "nw dist --enable-transparent-visuals --disable-gpu",
     "dev": "concurrently 'ng build -w' 'gulp'",
     "start": "ng serve",
     "lint": "tslint \"src/**/*.ts\"",
